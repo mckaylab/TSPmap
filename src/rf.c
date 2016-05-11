@@ -6,6 +6,9 @@
 #include <Rinternals.h>
 #include <Rdefines.h>	// Need this so the compiler recognizes the AS_NUMERIC function.
 
+#include <Rcpp.h>
+using namespace Rcpp;
+
 /*
  * rf.c
  *
@@ -30,27 +33,29 @@ dyn.load("/Users/zallen/Documents/msProject/Rpackage/TSPmap/src/rf.so")
 // This function takes a similarity threshold as a parameter, which is used to decide how similar two markers have to be in order to be considered similar enough that one will be removed.  The default value of threshold is -1.  The default value means that the user wishes to only identify exact duplicate markers, meaning that both markers must be missing data in all the same spots.  Otherwise, only the spots where neither marker is missing data is considered.
 // NOTE: a marker may be identified as a duplicate more than once, so the return list will have duplicate values.
 // Eliminate these in R using the unique() function within the finddups function.
+
+// [[Rcpp::export]]
 SEXP findDups(SEXP input, SEXP threshold)
 {
 	printf("\n\nFinding duplicate markers.\n");
 
 	int i, j, k;
 	int nprot = 0;
-    
+
     float similarity = 0;
-    
+
     // When comparing two columns of the input matrix:
     // same keeps track of the number of cells that are the same.
     // missing keeps track of the number of cells where at least one of the columns is zero (which corresponds to missing data in the original data matrix).
     // missingA and missingB keep track of how many cells are missing in the two columns that we are comparing.  If they are duplicates, we removed the one with the higher number of missing cells.
 	int same, missing, missingA, missingB;
-    
+
     // Convert threshold parameter to an integer.
     float thresh;
-    
+
     thresh = *REAL(threshold) * 10;
     //printf("-----> The threshold is %f\n", thresh);
-    
+
 	// Get dimensions of input matrix so we can create the output matrix.
 	// dims[0] is the numbers of A/B markers, dims[1] is the total number of markers.
 	int *dims;
@@ -74,7 +79,7 @@ SEXP findDups(SEXP input, SEXP threshold)
 	//for(i = 1516; i < 1517; i++)
 	{
         //printf("--------> HERE WE ARE #1, i = %i <----------\n", i);
-        
+
 		if(i%100 == 0)
 		{
 			printf(".");
@@ -106,10 +111,10 @@ SEXP findDups(SEXP input, SEXP threshold)
 				if(INTEGER(input)[i*c + k] == INTEGER(input)[j*c + k])
                 {
                     same++;
-                    
-                    
+
+
                     //printf("same = %i\n", same);
-                    
+
                     // If both values are zero, increase the missing conter.
                     if(INTEGER(input)[i*c + k] == 0)
                         missing++;
@@ -147,18 +152,18 @@ SEXP findDups(SEXP input, SEXP threshold)
             else
             {
                 // If threshold is not the default value, we want to check if the number of cells that are the same (only counting cells where neither marker is missing data) is above the threshold value.
-                
+
                 similarity = round((float)same*1000 / (float)c);
-                
+
                 //printf("missing =  %i, same = %i, c = %i, thresh = %f, test = %f\n", missing, same, c, thresh, (float)same*100.0/(float)(c));
                 //printf("similarity =  %f, thresh = %f, test = %f\n", similarity, thresh, (float)same*100.0/(float)(c));
-                
+
                 if(similarity >= thresh)
                 {
                     // Store the value i in position j, this way R will know the indices of the original markers (i) and can extract the indices of the duplicates that need to be removed simply by finding all indices that are not -1.
                     // Only insert the value of i if another i has not already been put in that slot.
                     // Actually we use the value i+1 since R starts numbering array elements at 1.
-                    
+
                     // We want to keep the marker that has more data.  If they are missing the same number of cells, we don't care which one we keep.
                     if(missingA <= missingB)
                     {
@@ -304,7 +309,7 @@ SEXP computeRF(SEXP input, SEXP correctionFlag)
 
     // Convert correctionFlag parameter to a boolean.
     float corrFlag;
-    
+
     corrFlag = *REAL(correctionFlag);
 
 	// create return matrix as a square matrix with both dimensions equal to the number of markers.
@@ -362,7 +367,7 @@ SEXP computeRF(SEXP input, SEXP correctionFlag)
                 REAL(ans)[i*dims[1] + j] = (diff + (float)missing/2)/(float)c;
             else
                 REAL(ans)[i*dims[1] + j] = diff/(float)(c-missing);
-            
+
 			// We also want to put the value in cell [j,i] so that we have the full matrix.
 			// We will need the full matrix when finding similar markers (see findSimilars function above).
 			REAL(ans)[j*dims[1] + i] = REAL(ans)[i*dims[1] + j];
@@ -371,7 +376,7 @@ SEXP computeRF(SEXP input, SEXP correctionFlag)
 			//printf("ic + j = %i\n", i*dims[1] + j);
             //return(ans);
 		}
-        
+
         //printf("ans = %f\n", REAL(ans)[i*dims[1] + j]);
         //printf("missing = %i, diff = %i\n", missing, diff);
 

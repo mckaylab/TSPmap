@@ -28,7 +28,7 @@ finddups <- function(markerdata, threshold = -1, filename=NULL)
     newmatrix[,i] = replace(newmatrix[,i], which(markerdata[,i]=="h"), as.integer(0))
   }
 
-  dups = .Call("findDups", newmatrix, threshold)
+  dups = .Call("findDups", newmatrix, threshold, PACKAGE = "TSPmap")
 
   # The findDups() function passes back a matrix which holds the value of the original marker in each element.  In other words, if marker 120 is found to be a duplicate of marker 15, then cell 120 will have the value of 15.
   # This is so that when we find duplicates, we can know which markers they are duplicates of.

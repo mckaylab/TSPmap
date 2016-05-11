@@ -1,3 +1,6 @@
 rf.o
 GeneticDistance.so
 rf.so
+*.o
+*.so
+*.dll
