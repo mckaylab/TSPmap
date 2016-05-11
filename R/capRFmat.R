@@ -6,6 +6,7 @@
 #' @param threshold - upper limit on meaningful rf values.
 #' @param capval - value to which rf values above threshold will be set.
 #' @return matrix of recombination frequency values, with all values above threshold set to capval
+#' @export
 #'
 capRFmat <- function(rfmat, threshold, capval = 1.0)
 {

@@ -1,15 +1,12 @@
-
-# function to clean up rf matrix and make it pretty
-cleanrfmat = function(rfmat){
-  # round it
-#   rfmat = round(rfmat, 2)
-  # keep lower
-  rfmat[upper.tri(rfmat)] = NA
-  diag(rfmat) = NA
-  return(rfmat)
-}
-
-# function to add marker names
+#' add marker names
+#'
+#' @description  function to add marker names
+#' @usage finddups(markerdata, threshold, filename)
+#' @param mymatrix - rfmatrix
+#' @param rawdata raw marker data file to get names from
+#' @return pretty rf matrix
+#' @export
+#'
 addMarkerNames = function(mymatrix, rawdata){
   # add row names after making df
   mydf = as.data.frame(mymatrix)

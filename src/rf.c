@@ -6,8 +6,7 @@
 #include <Rinternals.h>
 #include <Rdefines.h>	// Need this so the compiler recognizes the AS_NUMERIC function.
 
-#include <Rcpp.h>
-using namespace Rcpp;
+
 
 /*
  * rf.c
@@ -34,7 +33,7 @@ dyn.load("/Users/zallen/Documents/msProject/Rpackage/TSPmap/src/rf.so")
 // NOTE: a marker may be identified as a duplicate more than once, so the return list will have duplicate values.
 // Eliminate these in R using the unique() function within the finddups function.
 
-// [[Rcpp::export]]
+
 SEXP findDups(SEXP input, SEXP threshold)
 {
 	printf("\n\nFinding duplicate markers.\n");
