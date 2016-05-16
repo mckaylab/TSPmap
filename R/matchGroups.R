@@ -24,7 +24,7 @@ matchGroups <- function(ind_group1, ind_group2, markerData, cutList, rfmatrix, e
   submatrix = pareMatrix(rfmatrix, subgroups)
 
   # Also select the corresponding subgroup of the raw marker data object.
-  subrawdata = rawdata[c(groupA, groupB)]
+  subrawdata = markerData[c(groupA, groupB)]
 
   # Create the TSP matrix file.
   subtspmat = createTSPFile(subrawdata,submatrix,"temp", "./")

@@ -1,7 +1,7 @@
 #' add marker names
 #'
 #' @description  function to add marker names
-#' @usage finddups(markerdata, threshold, filename)
+#' @usage addMarkerNames(mymatrix, rawdata)
 #' @param mymatrix - rfmatrix
 #' @param rawdata raw marker data file to get names from
 #' @return pretty rf matrix

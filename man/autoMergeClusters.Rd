@@ -5,7 +5,7 @@
 \title{Merge the clusters from autoClusterMST into full linkage groups.}
 \usage{
 autoMergeClusters(clusterlist, rfmat, LKHexec,
-numChromosomes, rfCap = 0, minMergeWeight = 0.40, ...)
+numChromosomes, rfCap = 0, minMergeWeight = 0.40, rawdata)
 }
 \arguments{
 \item{clusterlist}{- list of clusters produced by autoClusterMST}
@@ -20,7 +20,7 @@ numChromosomes, rfCap = 0, minMergeWeight = 0.40, ...)
 
 \item{minMergeWeight}{- this is the minimum weight that will cause two clusters to be merged.  If the min weight between the two groups exceeds this threshold, the two groups will not be merged.}
 
-\item{...}{other arguments such as rawdata}
+\item{rawdata}{original raw marker data that was read into the R session}
 }
 \value{
 Returns the list of linkage groups.

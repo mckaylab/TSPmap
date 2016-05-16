@@ -2,17 +2,17 @@
 #'
 #'  Starting with the clusters produced by autoClusterMST, this function merges them until we are left with full linkage groups.
 #' @usage autoMergeClusters(clusterlist, rfmat, LKHexec,
-#' numChromosomes, rfCap = 0, minMergeWeight = 0.40, ...)
+#' numChromosomes, rfCap = 0, minMergeWeight = 0.40, rawdata)
 #' @param clusterlist - list of clusters produced by autoClusterMST
 #' @param rfmat - recombination frequency matrix, produced by the rfmatrix.R/computeRFmat function
 #' @param LKHexec - path and filename of LKH executable - must not contain the tilde character!
 #' @param numChromosomes - number of chromosomes
 #' @param rfCap - value at which the rf matrix was capped.
 #' @param minMergeWeight - this is the minimum weight that will cause two clusters to be merged.  If the min weight between the two groups exceeds this threshold, the two groups will not be merged.
-#' @param ... other arguments such as rawdata
+#' @param rawdata original raw marker data that was read into the R session
 #' @return Returns the list of linkage groups.
 #' @export
-autoMergeClusters <- function(clusterlist, rfmat, LKHexec, numChromosomes, rfCap = 0, minMergeWeight = 0.40, ...)
+autoMergeClusters <- function(clusterlist, rfmat, LKHexec, numChromosomes, rfCap = 0, minMergeWeight = 0.40, rawdata)
 {
   # See if the smallest clusters have a clear affinity for another cluster.
 

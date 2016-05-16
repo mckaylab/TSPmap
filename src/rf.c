@@ -36,7 +36,7 @@ dyn.load("/Users/zallen/Documents/msProject/Rpackage/TSPmap/src/rf.so")
 
 SEXP findDups(SEXP input, SEXP threshold)
 {
-	printf("\n\nFinding duplicate markers.\n");
+	Rprintf("\n\nFinding duplicate markers.\n");
 
 	int i, j, k;
 	int nprot = 0;
@@ -81,9 +81,9 @@ SEXP findDups(SEXP input, SEXP threshold)
 
 		if(i%100 == 0)
 		{
-			printf(".");
+			Rprintf(".");
 			if(i % 500 == 0)
-				printf(" Processed %i of %i markers\n", i, dims[1]);
+				Rprintf(" Processed %i of %i markers\n", i, dims[1]);
 		}
 
 		// Step through all markers from i to the end.
@@ -190,7 +190,7 @@ SEXP findDups(SEXP input, SEXP threshold)
 // Here we want to find markers which have 90% similarity in the recombination frequency matrix.
 SEXP findSimilars(SEXP input)
 {
-	printf("\n\nFinding similar markers.\n");
+	Rprintf("\n\nFinding similar markers.\n");
 
 	int i, j, k;
 	int nprot = 0;
@@ -221,9 +221,9 @@ SEXP findSimilars(SEXP input)
 	{
 		if(i%100 == 0)
 		{
-			printf(".");
+			Rprintf(".");
 			if(i % 500 == 0)
-				printf(" Processed %i markers\n", i);
+				Rprintf(" Processed %i markers\n", i);
 		}
 
 		// Step through all markers from i to the end.
@@ -292,7 +292,7 @@ SEXP findSimilars(SEXP input)
 // correctionFlag - this flag controls whether or not the data correction term is used when computing the recombination frequency.
 SEXP computeRF(SEXP input, SEXP correctionFlag)
 {
-	printf("\n\nComputing recombination frequency matrix.\n");
+	Rprintf("\n\nComputing recombination frequency matrix.\n");
 
 	int i, j, k;
 	int nprot = 0;
@@ -320,7 +320,7 @@ SEXP computeRF(SEXP input, SEXP correctionFlag)
 
 	// Shortcut for dims[0] since we will use it a lot.
 	int c = dims[0];
-	printf("c = %i, dims[1] = %i\n", c, dims[1]);
+	Rprintf("c = %i, dims[1] = %i\n", c, dims[1]);
 
 	// Step through all markers.
 	// Start at i = 1 to ignore the marker name column.
@@ -329,9 +329,9 @@ SEXP computeRF(SEXP input, SEXP correctionFlag)
 	{
 		if(i%100 == 0)
 		{
-			printf(".");
+			Rprintf(".");
 			if(i % 500 == 0)
-				printf(" Processed %i of %i markers\n", i, dims[1]);
+				Rprintf(" Processed %i of %i markers\n", i, dims[1]);
 		}
 
 		// Step through all markers from i to the end.

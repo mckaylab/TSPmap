@@ -19,7 +19,7 @@ matchGroups2 <- function(group1, group2, markerData, rfmatrix, execPath)
   submatrix = pareMatrix(rfmatrix, subgroups)
 
   # Also select the corresponding subgroup of the raw marker data object.
-  subrawdata = rawdata[subgroups]
+  subrawdata = markerData[subgroups]
 
   # NOTE: tempdir() needs to have an extra "/" added to it.
   tempdirectory = paste0(tempdir(),"/")

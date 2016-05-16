@@ -4,7 +4,7 @@
 \alias{addMarkerNames}
 \title{add marker names}
 \usage{
-finddups(markerdata, threshold, filename)
+addMarkerNames(mymatrix, rawdata)
 }
 \arguments{
 \item{mymatrix}{- rfmatrix}
