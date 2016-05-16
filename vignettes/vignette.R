@@ -49,6 +49,8 @@ Concordepath = "~/TSPexecs/concorde_mac"
 rawdata = readFile(paste0(datapath, "rawdata/JM20Demo_rawinput.tsv"),
                    classificationFlag=F)
 
+rawdata = readFile(system.file("extdata", "JM20Demo_rawinput.tsv", package = "TSPmap"))
+
 # -----------------------------------------------------
 # 2 find and remove duplicate markers
 # -----------------------------------------------------
@@ -108,7 +110,7 @@ writeRFmat(paste0(datapath, filepath, paste("JM20RFmatrixFromTSPmap","csv", sep=
 # solver will take longer to run.
 
 rfCap = 0.4
-cappedrfmat = capRFmat(rfmat, rfCap, 0.5)
+cappedrfmat = capRFmat(rfmat, rfCap, capval = 0.5)
 
 # The capped RF matrix will be used in all computations from this point onward.
 
@@ -152,12 +154,12 @@ finalMap = finalMap[!sapply(finalMap, is.null)]
 # NOT SURE WHAT THIS MEANS??? -ZAA
 
 # also within this loop it calculates the genetic distance. can do kosambi instead
-newdf = data.frame()
+distancedf = data.frame()
 for(i in 1:length(finalMap)){
   # print (i)
   temp = as.data.frame(computeHaldane(finalMap[[i]]))
   temp$groupname = i
-  newdf = rbind(newdf, temp)
+  distancedf = rbind(distancedf, temp)
 }
 
 # -----------------------------------------------------
@@ -184,9 +186,9 @@ for(i in 1:length(finalMap))
   plotTSPsoln(finalMap[[i]], "JM20", "Concorde", colorVec)
 
   # This saves the plots.
-  filename = paste0(datapath, resultpath, "/JM20",i,".png")
-  dev.copy(png,filename,width=8,height=8,units="in",res=100)
-  dev.off()
+  #filename = paste0(datapath, resultpath, "/JM20",i,".png")
+  #dev.copy(png,filename,width=8,height=8,units="in",res=100)
+  #dev.off()
 
   # Update the lists for the overall plot.
   fullMap = c(fullMap, as.numeric(finalMap[[i]][,4]))
@@ -200,5 +202,13 @@ fullColorVec = unlist(fullColorVec)
 plot(fullMap, cex=.5, col = fullColorVec, xlab = "Marker Position", ylab = "Marker Position in JoinMap Solution", pch = 19)
 
 
+orderedmarkers<-as.matrix(rawdata[,as.character(distancedf$markername)])
+orderedmarkers<-data.frame(orderedmarkers, stringsAsFactors=FALSE)
+orderedmarkers<-rbind(as.character(distancedf$groupname), as.character(distancedf$`Haldane (cM)`), orderedmarkers)
 
 
+markermap<-table2map(markertable)
+
+
+
+plot(markermap)

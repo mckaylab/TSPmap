@@ -4,14 +4,14 @@
 \alias{matchGroups2}
 \title{This is an alternate version of the matchGroups function above.  This version works with groups from the GroupList.}
 \usage{
-matchGroups2(group1, group2 , markerData, rfmatrix, execPath)
+matchGroups2(group1, group2 , rawdata, rfmatrix, execPath)
 }
 \arguments{
 \item{group1}{index of the first cluster}
 
 \item{group2}{- index of the second cluster}
 
-\item{markerData}{- main marker data file, produced by either the readfile.R/readFile function or the duplicatemarkers.R/removedups function}
+\item{rawdata}{- main marker data file, produced by either the readfile.R/readFile function or the duplicatemarkers.R/removedups function}
 
 \item{rfmatrix}{- recombination frequency matrix, produced by the rfmatrix.R/computeRFmat function}
 

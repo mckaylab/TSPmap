@@ -138,7 +138,7 @@ autoMergeClusters <- function(clusterlist, rfmat, LKHexec, numChromosomes, rfCap
           {
             testweight = 100
           } else if(tspvals[lowestIndex,i] == 100) {
-            tspvals[lowestIndex,i] = matchGroups2(clusters[[lowestIndex]], clusters[[i]], rawdata, rfmat, LKHexec)
+            tspvals[lowestIndex,i] = matchGroups2(clusters[[lowestIndex]], clusters[[i]],rawdata = rawdata, rfmat, LKHexec)
             tspvals[i,lowestIndex] = tspvals[lowestIndex,i]
           }
         }
