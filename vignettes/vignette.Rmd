@@ -10,13 +10,15 @@ vignette: >
 ---
 
 
-```{r}
-#install.packages(devtools)
+```{r, eval=FALSE}
+install.packages(devtools)
 library(devtools)
 install_bitbucket("greymonroe/TSPmap")
-library(TSPmap)
 ```
 
+```{r}
+library(TSPmap)
+```
 
 
 ```{r}
@@ -77,14 +79,25 @@ finalMap = finalMap[!sapply(finalMap, is.null)]
 ```
 
 ```{r}
-newdf = data.frame()
-for(i in 1:length(finalMap)){
-  # print (i)
-  temp = as.data.frame(computeHaldane(finalMap[[i]]))
-  temp$groupname = i
-  newdf = rbind(newdf, temp)
-}
+distancedf<-TSPmap2distancedf(finalMap)
 ```
+
+```{r}
+markers<-reorderMarkers(rawdata = rawdata, distancedf = distancedf)
+```
+
+```{r, eval=F }
+write.table(markers, file = "/Users/greymonroe/Desktop/orderedMarkers.csv", sep=",", row.names = F)
+Rqtlmap<-qtl::read.cross(file = "/Users/greymonroe/Desktop/orderedMarkers.csv", format = "csv", genotypes = c("a","b" ,"-"))
+```
+
+```{r}
+markertable<-distancedf2table(distancedf = distancedf)
+head(markertable)
+Rqtlmap<-#qtl::table2map(markertable)
+```
+
+
 
 
 Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
