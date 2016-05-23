@@ -1,0 +1,32 @@
+---
+title: "README"
+output:
+  md_document:
+    variant: markdown_github
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+### Description
+
+Recent advances in genotyping by sequencing  (GBS) technologies have led to a dramatic increase in the number of markers used to generate genetic linkage maps. This can greatly improve the resolution for mapping quantitative traits to loci regulating ecologically and agriculturally important traits. However, these large marker datasets also increase the risk of misclustering and misordering of markers in maps generated with commonly used mapping software.  In order to address these issues, we created a new genetic mapping program, TSPmap, which uses a combination of approximate and exact Traveling Salesman Problem (TSP) solvers in an algorithm to handle large genomic marker datasets. We found that TSPmap can produce high quality linkage maps using a large number of markers and with relatively low sensitivity to missing and erroneous genotyping data compared to other methods. TSPmap provides a robust approach to efficiently generate high quality genetic maps with large numbers of homozygous genomic markers. 
+
+### Example
+See vignette. 
+
+Currently, TSPmap is installed with the code:
+```{r, eval=F}
+devtools::install_bitbucket("greymonroe/TSPmap")
+library(TSPmap)
+```
+
+
+

@@ -1,6 +1,6 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "TSPmap tutorial"
+author: "J Grey Monroe"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -8,16 +8,17 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+Recent advances in genotyping by sequencing  (GBS) technologies have led to a dramatic increase in the number of markers used to generate genetic linkage maps. This can greatly improve the resolution for mapping quantitative traits to loci regulating ecologically and agriculturally important traits. However, these large marker datasets also increase the risk of misclustering and misordering of markers in maps generated with commonly used mapping software.  In order to address these issues, we created a new genetic mapping program, TSPmap, which uses a combination of approximate and exact Traveling Salesman Problem (TSP) solvers in an algorithm to handle large genomic marker datasets. We found that TSPmap can produce high quality linkage maps using a large number of markers and with relatively low sensitivity to missing and erroneous genotyping data compared to other methods. TSPmap provides a robust approach to efficiently generate high quality genetic maps with large numbers of homozygous genomic markers. 
 
 # Installation
 
 ```{r, eval=FALSE}
-install.packages(devtools)
+install.packages("devtools")
 library(devtools)
 install_bitbucket("greymonroe/TSPmap")
 ```
 
-## Load package
+Load package
 ```{r}
 library(TSPmap)
 ```
@@ -37,7 +38,7 @@ Concordepath = "~/TSPexecs/concorde_mac"
 
 # Create linkage map from marker data
 
-## Read in raw data. The code provided below loads a dataset that comes wtih the TSPmap package.
+Read in raw data. The code provided below loads a dataset that comes wtih the TSPmap package.
 ```{r}
 rawdata = readFile(system.file("extdata", "JM20Demo_rawinput.tsv", package = "TSPmap"))
 ```
@@ -54,7 +55,7 @@ rawdata = removedups(rawdata, duplicates)
 rfmat = computeRFmat(rawdata, corrFlag=T)
 ```
 
-## Create 'clean' recombination frequency matrix for more easy visualization.
+## Create 'clean' recombination frequency matrix for more easy visualization (optional)
 ```{r}
 rfmatclean = cleanrfmat(rfmat)
 rfmatclean = addMarkerNames(rfmatclean, rawdata)
@@ -67,18 +68,29 @@ rfCap = 0.4
 cappedrfmat = capRFmat(rfmat, rfCap, capval = 0.5)
 ```
 
+## Set expected chromsome number
+TSPmap also requires that users indicate the number of expected linkage groups, so it is helpful to know the chromosome count of the species being studied. 
 ```{r}
 numChromosomes = 5
 ```
 
+## Create raw clusters
+Using the recombination frequency matrix, the unordered dataset is arranged in a minimum spanning tree and then broken into large clusters that may contain markers from more than one chromosome.
+
+Next, each cluster is run through the approximate TSP solver, LKH, and checked for rf values that exceed a user-specified threshold. When such a value is detected, the cluster is broken apart to make sure that the final clusters do not contain markers from more than one chromosome.  This allows the user to control the sensitivity of the linkage group formation by setting what recombination frequency values may exist within a linkage group.
 ```{r}
 rawclusters = autoClusterMST(rawdata, cappedrfmat, numChromosomes, LKHexec, internalRfThreshold=0.4)
 ```
 
+## Merge clusters
+
+Once the markers have been broken into well-separated clusters, the next step is to merge clusters that belong together in order to form the final linkage groups. 
 ```{r}
 mergedclusters = autoMergeClusters(rawclusters, cappedrfmat, LKHexec, numChromosomes, rfCap, rawdata=rawdata)
 ```
 
+## Order markers
+The final clusters are processed using Concorde to produce the optimal linkage map for the given data.  
 ```{r}
 finalMap = list()
 for(i in 1:length(mergedclusters))
@@ -86,77 +98,33 @@ for(i in 1:length(mergedclusters))
   finalMap[[i]] = createMap(rawdata, cappedrfmat, mergedclusters[i], Concordepath)
 }
 ```
-
+## Remove empty elements, if necessary
 ```{r}
 finalMap = finalMap[!sapply(finalMap, is.null)]
 ```
-
+## Convert final TSPmap solution to distance data.frame
 ```{r}
 distancedf<-TSPmap2distancedf(finalMap)
 ```
 
+## Reorder raw marker data
+Reorders raw markerdata and adds linkage group and marker position based on TSPmap results and adds a numbered index column before genotype matrix. This produces the final product that can be used for downstreat analyses such as QTL mapping.
 ```{r}
 markers<-reorderMarkers(rawdata = rawdata, distancedf = distancedf)
 ```
-
-```{r, eval=F }
-write.table(markers, file = "/Users/greymonroe/Desktop/orderedMarkers.csv", sep=",", row.names = F)
-Rqtlmap<-qtl::read.cross(file = "/Users/greymonroe/Desktop/orderedMarkers.csv", format = "csv", genotypes = c("a","b" ,"-"))
+If saved as .csv can be imported to R/qtl by qtl:read.cross().
+```{r, eval=F}
+write.table(markers, file = "orderedMarkers.csv", sep=",", row.names = F)
+Rqtlmap<-qtl::read.cross(file = "orderedMarkers.csv", format = "csv", genotypes = c("a","b" ,"-"))
 ```
 
-```{r}
+## converts distancedf into table (optional)
+Converts distancedf into table that can be converted into a map object by qtl::table2map
+```{r, eval=T}
 markertable<-distancedf2table(distancedf = distancedf)
-head(markertable)
-#Rqtlmap<-qtl::table2map(markertable)
+Rqtlmap<-qtl::table2map(markertable)
+plot(Rqtlmap)
 ```
 
 
 
-
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
-
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
-
-## Vignette Info
-
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
-
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
-```
-
-You can enable figure captions by `fig_caption: yes` in YAML:
-
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
-```
-
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))

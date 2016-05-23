@@ -1,0 +1,12 @@
+---
+title: "NEWS"
+author: "Grey Monroe"
+date: "`r Sys.Date()`"
+output: md_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# TSPmap 1.0.0.000 Intial release (05-27-2016)
