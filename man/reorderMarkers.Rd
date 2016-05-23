@@ -16,5 +16,6 @@ data.frame of markers properly ordered with linkage group and position
 }
 \description{
 Reorders raw markerdata and adds linkage group and marker position based on TSPmap results, if written as .csv can be imported to R/qtl by qtl:read.cross()
+adds a numbered index column before genotype matrix
 }
 

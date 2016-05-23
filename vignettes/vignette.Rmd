@@ -9,6 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+# Installation
 
 ```{r, eval=FALSE}
 install.packages(devtools)
@@ -16,39 +17,51 @@ library(devtools)
 install_bitbucket("greymonroe/TSPmap")
 ```
 
+## Load package
 ```{r}
 library(TSPmap)
 ```
 
+# TSP solvers
+
+TSPmap requires two existing tools to find the optimal solution:
+LKH, http://www.akira.ruc.dk/~keld/research/LKH/
+Concorde, http://www.math.uwaterloo.ca/tsp/concorde.html
+
+Download the exceutable files approprirate for your system. The path to the each executable file must be specified in your code to call for functions within TSPmap:
 
 ```{r}
 LKHexec = "~/TSPexecs/LKH"
 Concordepath = "~/TSPexecs/concorde_mac"
 ```
 
+# Create linkage map from marker data
 
+## Read in raw data. The code provided below loads a dataset that comes wtih the TSPmap package.
 ```{r}
 rawdata = readFile(system.file("extdata", "JM20Demo_rawinput.tsv", package = "TSPmap"))
 ```
 
-```{r}
-duplicates = finddups(rawdata, threshold = 99)
-str(duplicates)
-```
+## Identify and remove duplicate markers.
 
 ```{r}
+duplicates = finddups(rawdata, threshold = 99)
 rawdata = removedups(rawdata, duplicates)
 ```
 
+## Calculate recombination frequency between markers.
 ```{r}
 rfmat = computeRFmat(rawdata, corrFlag=T)
 ```
 
+## Create 'clean' recombination frequency matrix for more easy visualization.
 ```{r}
 rfmatclean = cleanrfmat(rfmat)
 rfmatclean = addMarkerNames(rfmatclean, rawdata)
 ```
 
+## Adjust recombination frequency values
+Because it is detrimental to the performance of the TSP solver to allow these values to remain in the analysis, the user may input a cutoff threshold (default set to 0.4) above which all rf values are inflated to 0.5, preventing the solver from spending computation time optimizing these non-informative values.  However, setting the threshold too low can begin to affect the clustering and the final ordering of markers within the linkage group. This is especially true for noisy data sets, since meaningful rf values may be relatively high when there is a lot of noise in the data. 
 ```{r}
 rfCap = 0.4
 cappedrfmat = capRFmat(rfmat, rfCap, capval = 0.5)
@@ -94,7 +107,7 @@ Rqtlmap<-qtl::read.cross(file = "/Users/greymonroe/Desktop/orderedMarkers.csv", 
 ```{r}
 markertable<-distancedf2table(distancedf = distancedf)
 head(markertable)
-Rqtlmap<-#qtl::table2map(markertable)
+#Rqtlmap<-qtl::table2map(markertable)
 ```
 
 

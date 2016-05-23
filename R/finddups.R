@@ -9,6 +9,8 @@
 #' @return list of duplicate markers
 #' @useDynLib TSPmap
 #' @export
+#' @import utils
+#' @import graphics
 #'
 finddups <- function(markerdata, threshold = -1, filename=NULL)
 {
