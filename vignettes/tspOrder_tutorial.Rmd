@@ -1,0 +1,136 @@
+---
+title: "tspOrder_tutorial"
+author: "JT Lovell"
+date: "2/27/2017"
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 1
+    number_sections: true
+    fig_caption: yes
+---
+
+
+***
+
+  [email: johntlovell@gmail.com](johntlovell@gmail.com)  --  [website: lovelleeb.weebly.com](lovelleeb.weebly.com)  --  [github: github.com/jtlovell/qtlTools](https://github.com/jtlovell/qtlTools)
+
+***
+
+```{r setup, include=FALSE}
+library(knitr)
+library(xtable)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\newpage 
+
+# Simulate a genetic map and genotype data
+For the purposes of this tutorial, we will use paramters that mimick some types of NGS data:
+
+* 10% Missing data
+* 0.1% Genotyping error
+* 3 chromosomes
+* 50 markers / chromosome (.2 - .5 markers /cM)
+* unequal marker density across the chromosomses
+
+## Load the required packages - install if needed
+```{r, message=FALSE, results="hide", error=FALSE, warning = FALSE}
+library(devtools)
+install_github("jtlovell/qtlTools")
+install_github("mckaylab/TSPmap")
+```
+
+```{r loadLibs, message=FALSE, results="hide", error=FALSE, warning = FALSE}
+libs2load<-c("ASMap","qtlTools","TSP","TSPmap")
+suppressMessages(sapply(libs2load, require, character.only = TRUE))
+```
+
+
+## Simulate the genetic map
+```{r, fig.cap = "the simulated genetic map for the tutorial. Each horizontal line indicates 1 marker."}
+set.seed(42)
+map <- sim.map(len=c(150,200,100),
+               n.mar=c(50,50,50),
+               include.x =FALSE, sex.sp =F)
+plot.map(map)
+map.orig<-map
+```
+
+
+## Simulate the R/qtl cross object
+```{r}
+cross.sim <- sim.cross(map, type="riself", n.ind=250, map.function = "kosambi",
+                     error.prob = 0.001, keep.qtlgeno = F,missing.prob=0.1)
+cross<-cross.sim
+```
+
+## Randomize the positions of the markers so that we can re-order them
+```{r}
+newMarkerList<-lapply(chrnames(cross), function(x) sample(markernames(cross, chr = x)))
+names(newMarkerList)<-chrnames(cross)
+# randomize the positions of markers
+cross<-newLG(cross, markerList = newMarkerList)
+```
+
+# The structure of the data pre-ordering
+## Estimate recombination fractions
+To order markers, we must calculate chromosome - specific recombination fractions. For very large genetic maps (>5k markers for a RIL, >3k markers for a 4-way), we should not attempt to do this for the entire map. Instead, we can do it chromosome-by-chromosome. 
+
+For the purposes of this tutorial, let's calculate it for the whole population. Notice that
+```{r, fig.cap = "Pairwise recombination fraction plot following linkage group construction, but before marker ordering. Note that recombination fractions are always high between chromosomes (blue). All pairs of highly correlated markers (low recombination fractions, yellow) exist on the same chromosome. Since marker order is random, it is not surprising that close positions on a chromosome do not show low recombination fractions"}
+cross<-est.rf(cross)
+plot.rf(cross)
+```
+
+# Order markers using TSPmap
+## Overview
+There are many methods to order markers. While joinmap4 remains the industry standard, it has drawbacks - it's slow and is not free. Recently several other methods have been proposed using graph theory. MSTmap is a good option, but it can only handle populations with 2-genotype markers (BC/RIL/DH/etc), not F2, 4-way etc. mapping populations. To overcome these issues, it is optimal to assess marker orders through evaluation of the recombination fraction matrix only.
+
+## Marker ordering using TSP solvers
+Here, we build upon the `TSPmap` protocol and employ a travelling salesperson problem solver to find the shortest path through the recombination fraction matrix, and allow the user to directly pipe an R/qtl cross object into the TSPmap protocol. The optimal method is `concorde`, however, this requires a separate installation of the concorde program. See `?tspOrder` for details on how to do this. 
+
+```{r tsp, message=FALSE, results="hide", error=FALSE, warning = FALSE}
+cross.order<-tspOrder(cross = cross,hamiltonian = TRUE,
+                  method="concorde",concorde_path = "/Users/John/Documents/concorde/TSP")
+```
+
+## Visualize the new marker order
+```{r, fig.cap = "Pairwise recombination fraction plot following marker ordering. Note that following the marker reordering, there is a decay in correlations between markers from the diagonal. This is an indication of a high-quality map, since distant markers are not correlated."}
+cross.order<-est.rf(cross.order) 
+plot.rf(cross.order, main = "")
+```
+
+## Compare to the original 
+```{r rford, fig.cap = "Recombination fractions of the simulated genetic map"}
+cross.sim<-est.rf(cross.sim) 
+plot.rf(cross.sim, main = "")
+```
+
+# Estimate the genetic maps and compare to the original simulated data
+## Estimate the genetic map for the new cross
+```{r}
+newmap<-est.map(cross.order, map.function = "kosambi", error.prob = 0.001)
+cross.out<-replace.map(cross.order, newmap)
+```
+
+## Compare the new to the simulated genetic maps
+Note that the marker order is identical between the two crosses
+```{r mapcomp, fig.cap = "comparison of the genetic maps before flipping marker orientation"}
+plot.map(cross.sim, cross.out)
+```
+
+## Switch chromosome orientation to match simulated data
+TSPmap runs agnostic to the orientation of the chromosomes. Since we started with simulated data, it is appropriate to re-orient the chromosomes to match these
+```{r}
+map.sim<-pullMap(cross.sim)
+colnames(map.sim)[2:3]<-c("orig.chr","orig.pos")
+map.out<-pullMap(cross.out)
+map<-merge(map.out, map.sim, by = "marker.name")
+map<-map[match(map.out$marker.name, map$marker.name),]
+cross.out<-matchMarkerOrder(cross.out, marker.chr.bp = map$orig.chr, marker.pos.bp = map$orig.pos)
+```
+
+```{r mapcomp2, fig.cap = "final comparison of the genetic maps. The horizontal lines connect the marker position of the simulated data (left) with the TSPmap re-ordered markers (right). Note that none of the marker order is nearly identical. Such differences are due to the simulated missing data and erroneous genotypes."}
+plot.map(cross.sim, cross.out)
+```
