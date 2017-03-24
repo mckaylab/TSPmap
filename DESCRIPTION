@@ -8,6 +8,7 @@ Depends:
 Imports:
     igraph
 License: GPL-2
+YEAR: 2017
 LazyData: true
 RoxygenNote: 5.0.1
 Suggests: knitr,
