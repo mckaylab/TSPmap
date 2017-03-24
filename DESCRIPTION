@@ -1,7 +1,7 @@
 Package: TSPmap
-Title: A Method Making Use of Traveling Salesperson Problem Solvers in the Construction of Genetic Linkage Maps
-Version: 0.0.0.9000
-Authors@R: c(person("J Grey", "Monroe", email = "greymonroe@gmail.com", role = c("aut", "cre")), person("Zachary", "Allen", role=c("aut")),person("Paul", "Tanger", role=c("aut")),person("Brook", "Moyers", role=("aut")),person("Jack", "Mullen", role=("aut")))
+Title: A tool making use of traveling salesperson problem solvers in the efficient and accurate construction of high-density genetic linkage maps
+Version: 1.0.0
+Authors@R: c(person("J Grey", "Monroe", email = "greymonroe@gmail.com", role = c("aut", "cre")), person("Zachary", "Allen", role=c("aut")),person("Paul", "Tanger", role=c("aut")),person("Jack", "Mullen", role=("aut")),person("John", "Lovell", role=("aut")),person("Brook", "Moyers", role=("aut")),person("Darell", "Whitley", role=("aut")),person("John", "McKay", role=("aut")))
 Description: What the package does (one paragraph).
 Depends:
     R (>= 3.2.5)
@@ -14,3 +14,4 @@ Suggests: knitr,
     rmarkdown,
     qtl
 VignetteBuilder: knitr
+URL: https://github.com/mckaylab/TSPmap.git
