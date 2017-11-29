@@ -24,7 +24,7 @@ See vignette.
 
 Currently, TSPmap is installed with the code:
 ```{r, eval=F}
-devtools::install_bitbucket("greymonroe/TSPmap")
+devtools::install_github("mckaylab/TSPmap")
 library(TSPmap)
 ```
 
