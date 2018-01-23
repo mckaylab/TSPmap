@@ -11,7 +11,9 @@
 callLKH <- function(execpath, filename, outputdir)
 {
   # Get home directory.
-  home = system("echo ${HOME}", intern =TRUE)
+  #home = system("echo ${HOME}", intern =TRUE)
+  # previous call threw error on user who was running on Windows. Will try below to bypass this issue.
+  home = path.expand("~")
 
   # Replace any ~ in the parameters with home.
   execpath = gsub("~", home, execpath)
