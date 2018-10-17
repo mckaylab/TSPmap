@@ -31,13 +31,7 @@ autoMergeClusters <- function(clusterlist, rfmat, LKHexec, numChromosomes, rfCap
 
   sortedSizes = sort(clusterSizes)
 
-  clusterOrder = vector()
-  for(i in 1:length(sortedSizes))
-  {
-    clusterOrder[i] = which(clusterSizes == sortedSizes[i])
-    # If there are two clusters with the same size, we will get a duplicate here.  To avoid this, set the clusterSizes element to zero after we've used it.
-    clusterSizes[clusterOrder[i]] = 0
-  }
+  clusterOrder = order(clusterSizes)
 
   # Now clusterOrder holds the indices of each cluster in size order.
 
