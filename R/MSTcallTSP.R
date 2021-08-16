@@ -18,7 +18,7 @@ MSTcallTSP = function(MSTgroup, rawdata, rfmat, LKHexec)
 
   # Create TSP matrix, send it to LKH.
   # NOTE: tempdir() needs to have an extra "/" added to it.
-  tempdirectory = paste0(tempdir(),"/")
+  tempdirectory = paste0(getwd(),"/")
   filename = "tsptempfile"
   tspfile = createTSPFile(subrawdata, submatrix, filename, tempdirectory)
 
