@@ -22,7 +22,7 @@ matchGroups2 <- function(group1, group2, rawdata, rfmatrix, execPath)
   subrawdata = rawdata[subgroups]
 
   # NOTE: tempdir() needs to have an extra "/" added to it.
-  tempdirectory = paste0(tempdir(),"/")
+  tempdirectory = paste0(getwd(),"/")
 
   # Create the TSP matrix file.
   subtspmat = createTSPFile(subrawdata,submatrix,"temp", tempdirectory)
