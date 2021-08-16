@@ -17,7 +17,7 @@ createMap <- function(rawdata, rfmat, cluster, Concexec)
   # Create TSP file in R's temporary directory, send it to Concorde.
   # NOTE: tempdir() needs to have an extra "/" added to it.
   # Also, tempdir() appears to have an extra "/" in it, remove this before continuing.
-  tempdirectory = paste0(tempdir(),"/")
+  tempdirectory = paste0(getwd(),"/")
   tempdirectory = gsub("//", "/", tempdirectory)
 
   filename = "tsptempfile"
